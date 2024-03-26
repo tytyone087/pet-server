@@ -26,7 +26,7 @@ app.get('/products', (req, res) =>{
             ['createdAt', 'DESC']
             //ASC:오름차순, DESC:내림차순
         ],
-        attributes:["id","name","description","price","seller","createdAt","imageUrl"],
+        attributes:["id","name","description","price","seller","createdAt","imageUrl", "soldout"],
     })
     .then((result)=>{
         console.log("PRODUCT : ", result);
@@ -88,6 +88,26 @@ app.post('/image', upload.single('image'), (req, res) =>{
     console.log(file)
     res.send({
        imageurl:file.path, 
+    })
+})
+app.post("/purchase/:id", (req, res) =>{
+    const {id} = req.params;
+    models.Product.update(
+        {
+            soldout:1,
+        },
+        {
+            where: {
+                id,
+            }
+        }
+    ).then((result) => {
+        res.send({
+            result:true,
+        })
+    }).catch((error)=>{
+        console.error(error);
+        res.status(500).send("에러가 발생했습니다.")
     })
 })
 
